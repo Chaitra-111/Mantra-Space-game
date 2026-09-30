@@ -129,9 +129,14 @@ export class SpaceScene {
       }
     }
 
-    // Handle boarding/landing
-    if (this.input.wasJustPressed('BoardShip') && this.nearestPlanet) {
-      this.onLandOnPlanet(this.nearestPlanet.data);
+    // Handle dynamic camera zoom and boarding
+    if (this.nearestPlanet) {
+      this.camera.setZoom(1.4); // Zoom in closer to planets for a realistic tour
+      if (this.input.wasJustPressed('BoardShip')) {
+        this.onLandOnPlanet(this.nearestPlanet.data);
+      }
+    } else {
+      this.camera.setZoom(1.0); // Reset zoom in deep space
     }
 
     // Handle explain (Ctrl+E) — show info for nearest planet
@@ -154,6 +159,7 @@ export class SpaceScene {
       // Mobile: Check touch/click on meteoroid
       if (this.input.wasMouseJustClicked() && m.isPointOver(mouseWorld.x, mouseWorld.y)) {
         this._blastMeteoroid(m);
+        this.input.mouse.justClicked = false; // Consume the click so we don't also land
       }
 
       // Check if meteoroid hits any planet (use current planet position, not stored target)
@@ -178,6 +184,14 @@ export class SpaceScene {
     if (this.messageTimer > 0) {
       this.messageTimer -= dt;
       if (this.messageTimer <= 0) this.message = '';
+    }
+
+    // Click-to-land interaction
+    if (this.input.wasMouseJustClicked() && this.nearestPlanet) {
+      const distToClick = distance(mouseWorld.x, mouseWorld.y, this.nearestPlanet.x, this.nearestPlanet.y);
+      if (distToClick < this.nearestPlanet.radius + 50) {
+        this.onLandOnPlanet(this.nearestPlanet.data);
+      }
     }
 
     this.input.clearFrame();

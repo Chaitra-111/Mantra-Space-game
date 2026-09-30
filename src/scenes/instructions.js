@@ -124,9 +124,9 @@ export class InstructionsScene {
 
     const instructions = [
       { icon: '🛸', title: 'MOVE:', desc: 'Click and hold mouse, OR use WASD / Arrow Keys.' },
-      { icon: '🌍', title: 'LAND:', desc: 'Fly close to a planet or star, then press [Ctrl + B] or [Cmd + B].' },
+      { icon: '🌍', title: 'LAND:', desc: 'Fly close to a planet or star, then click on it!' },
       { icon: '📚', title: 'LEARN:', desc: 'Fly close to a planet and press [Ctrl + E] or [Cmd + E].' },
-      { icon: '💥', title: 'DEFEND:', desc: 'Hover mouse over meteoroids and press [ENTER] to shoot them!' },
+      { icon: '💥', title: 'DEFEND:', desc: 'Click meteoroids to shoot them down!' },
       { icon: '⏸️', title: 'PAUSE:', desc: 'Press [P] to pause. While paused, click meteoroids to learn about them.' },
       { icon: '👨‍🚀', title: 'WALK:', desc: 'When landed, click ground or use Left/Right keys to walk around.' }
     ];
