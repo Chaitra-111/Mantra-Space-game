@@ -96,92 +96,74 @@ export class Spaceship {
     if (this.thrusting) {
       const flicker = Math.sin(time * 20) * 0.3 + 0.7;
       ctx.save();
-      ctx.globalCompositeOperation = 'screen';
-      const thrustGrad = ctx.createRadialGradient(-this.width / 2, 0, 0, -this.width * 1.5, 0, 35);
-      thrustGrad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-      thrustGrad.addColorStop(0.2, 'rgba(0, 212, 255, 0.8)');
-      thrustGrad.addColorStop(0.6, 'rgba(123, 47, 247, 0.4)');
+      ctx.globalAlpha = 0.6 * flicker;
+      const thrustGrad = ctx.createRadialGradient(-this.width / 2 - 5, 0, 0, -this.width / 2 - 5, 0, 20);
+      thrustGrad.addColorStop(0, '#FF6B00');
+      thrustGrad.addColorStop(0.5, '#FF4500');
       thrustGrad.addColorStop(1, 'transparent');
       ctx.fillStyle = thrustGrad;
       ctx.beginPath();
-      ctx.arc(-this.width / 2, 0, 35 * flicker, 0, Math.PI * 2);
+      ctx.arc(-this.width / 2 - 5, 0, 20 * flicker, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     }
 
-    // Space Shuttle - Main Fuselage
-    const fuselageGrad = ctx.createLinearGradient(0, -this.height / 2, 0, this.height / 2);
-    fuselageGrad.addColorStop(0, '#FFFFFF'); // White top
-    fuselageGrad.addColorStop(0.5, '#E2E8F0');
-    fuselageGrad.addColorStop(0.9, '#4A5568'); // Dark underbelly shadow
-    fuselageGrad.addColorStop(1, '#1A202C');
+    // Ship body - sleek design
+    const bodyGrad = ctx.createLinearGradient(-this.width / 2, -this.height / 2, this.width / 2, this.height / 2);
+    bodyGrad.addColorStop(0, '#4A5568');
+    bodyGrad.addColorStop(0.3, '#718096');
+    bodyGrad.addColorStop(0.7, '#A0AEC0');
+    bodyGrad.addColorStop(1, '#4A5568');
 
-    ctx.fillStyle = fuselageGrad;
+    // Main body
+    ctx.fillStyle = bodyGrad;
     ctx.beginPath();
-    ctx.moveTo(this.width / 2 + 10, 0); // Nose cone
-    ctx.bezierCurveTo(this.width / 4, -this.height / 3, -this.width / 4, -this.height / 3, -this.width / 2, -this.height / 3);
+    ctx.moveTo(this.width / 2 + 5, 0); // Nose
+    ctx.lineTo(this.width / 4, -this.height / 2 + 2);
+    ctx.lineTo(-this.width / 2, -this.height / 3);
+    ctx.lineTo(-this.width / 2 - 3, 0);
     ctx.lineTo(-this.width / 2, this.height / 3);
-    ctx.bezierCurveTo(-this.width / 4, this.height / 3, this.width / 4, this.height / 3, this.width / 2 + 10, 0);
+    ctx.lineTo(this.width / 4, this.height / 2 - 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#00D4FF44';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Cockpit window
+    const cockpitGrad = ctx.createRadialGradient(this.width / 6, 0, 0, this.width / 6, 0, 6);
+    cockpitGrad.addColorStop(0, '#00D4FF');
+    cockpitGrad.addColorStop(0.7, '#0088AA');
+    cockpitGrad.addColorStop(1, '#004455');
+    ctx.fillStyle = cockpitGrad;
+    ctx.beginPath();
+    ctx.ellipse(this.width / 6, 0, 6, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Wing accents
+    ctx.fillStyle = '#00D4FF33';
+    ctx.beginPath();
+    ctx.moveTo(0, -this.height / 2 + 3);
+    ctx.lineTo(-this.width / 4, -this.height / 2 + 6);
+    ctx.lineTo(-this.width / 3, -this.height / 3);
     ctx.closePath();
     ctx.fill();
 
-    // Delta Wings
-    const wingGrad = ctx.createLinearGradient(-this.width / 2, -this.height, -this.width / 2, this.height);
-    wingGrad.addColorStop(0, '#CBD5E0');
-    wingGrad.addColorStop(0.5, '#FFFFFF');
-    wingGrad.addColorStop(1, '#CBD5E0');
-
-    ctx.fillStyle = wingGrad;
     ctx.beginPath();
-    // Left Wing
-    ctx.moveTo(-this.width / 4, -this.height / 3.5);
-    ctx.lineTo(-this.width / 2, -this.height * 1.2); // Swept back tip
-    ctx.lineTo(-this.width / 2 - 5, -this.height / 3.5);
-    // Right Wing
-    ctx.moveTo(-this.width / 4, this.height / 3.5);
-    ctx.lineTo(-this.width / 2, this.height * 1.2);
-    ctx.lineTo(-this.width / 2 - 5, this.height / 3.5);
-    ctx.fill();
-    
-    // Wing dark heat shields (leading edges)
-    ctx.fillStyle = '#1A202C';
-    ctx.beginPath();
-    ctx.moveTo(-this.width / 4, -this.height / 3.5);
-    ctx.lineTo(-this.width / 2, -this.height * 1.2);
-    ctx.lineTo(-this.width / 2 + 4, -this.height * 1.15);
-    ctx.lineTo(-this.width / 4 + 4, -this.height / 3.5);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(-this.width / 4, this.height / 3.5);
-    ctx.lineTo(-this.width / 2, this.height * 1.2);
-    ctx.lineTo(-this.width / 2 + 4, this.height * 1.15);
-    ctx.lineTo(-this.width / 4 + 4, this.height / 3.5);
-    ctx.fill();
-
-    // Cockpit Window (black glass)
-    ctx.fillStyle = '#0F172A';
-    ctx.beginPath();
-    ctx.moveTo(this.width / 2.5, -4);
-    ctx.lineTo(this.width / 4, -6);
-    ctx.lineTo(this.width / 4, 6);
-    ctx.lineTo(this.width / 2.5, 4);
+    ctx.moveTo(0, this.height / 2 - 3);
+    ctx.lineTo(-this.width / 4, this.height / 2 - 6);
+    ctx.lineTo(-this.width / 3, this.height / 3);
     ctx.closePath();
     ctx.fill();
-    
-    // Glass reflection
-    ctx.fillStyle = 'rgba(0, 212, 255, 0.4)';
-    ctx.beginPath();
-    ctx.moveTo(this.width / 2.5, -4);
-    ctx.lineTo(this.width / 4 + 2, -5);
-    ctx.lineTo(this.width / 4 + 2, 0);
-    ctx.lineTo(this.width / 2.5, 0);
-    ctx.fill();
 
-    // Engine thruster nozzles
-    ctx.fillStyle = '#2D3748';
-    ctx.fillRect(-this.width / 2 - 4, -8, 4, 16);
-    ctx.fillStyle = '#1A202C';
-    ctx.fillRect(-this.width / 2 - 6, -6, 2, 12);
+    // Engine glow at back
+    ctx.fillStyle = this.thrusting ? '#00D4FF88' : '#00D4FF33';
+    ctx.beginPath();
+    ctx.arc(-this.width / 2 + 2, -this.height / 6, 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(-this.width / 2 + 2, this.height / 6, 2, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.restore();
 

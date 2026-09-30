@@ -139,20 +139,7 @@ export class Planet {
     shadow.addColorStop(0.7, 'rgba(0,0,0,0.5)');
     shadow.addColorStop(1, 'rgba(0,0,0,0.95)');
     ctx.fillStyle = shadow;
-    ctx.fillStyle = shadow;
     ctx.fillRect(0, 0, r * 2, r * 2);
-
-    // Atmospheric Edge Glow (Limb Brightening)
-    if (this.id !== 'moon' && this.id !== 'mercury') {
-      ctx.globalCompositeOperation = 'screen';
-      const atmoGrad = ctx.createRadialGradient(r, r, r * 0.75, r, r, r);
-      atmoGrad.addColorStop(0, 'rgba(0,0,0,0)');
-      atmoGrad.addColorStop(0.8, this.glowColor + '33');
-      atmoGrad.addColorStop(0.95, this.glowColor + 'AA');
-      atmoGrad.addColorStop(1, '#FFFFFF');
-      ctx.fillStyle = atmoGrad;
-      ctx.fillRect(0, 0, r * 2, r * 2);
-    }
   }
 
   update(dt) {

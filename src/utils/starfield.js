@@ -120,44 +120,31 @@ export class Nebula {
   }
 
   render(ctx, cameraX, cameraY, viewWidth, viewHeight, time) {
-    ctx.save();
-    ctx.globalCompositeOperation = 'screen';
     for (const cloud of this.clouds) {
-      // Parallax effect for nebula
-      const px = cloud.x - cameraX * 0.05 + Math.sin(time * 0.05 + cloud.x) * 10;
-      const py = cloud.y - cameraY * 0.05 + Math.cos(time * 0.05 + cloud.y) * 10;
+      const px = cloud.x - cameraX * 0.15 + Math.sin(time * 0.1 + cloud.x) * 20;
+      const py = cloud.y - cameraY * 0.15 + Math.cos(time * 0.1 + cloud.y) * 20;
 
-      // Wrap around so nebula is infinite
-      const wrapW = 4000;
-      const wrapH = 4000;
-      let sx = ((px) % wrapW + wrapW) % wrapW - wrapW / 2;
-      let sy = ((py) % wrapH + wrapH) % wrapH - wrapH / 2;
+      const screenX = px + viewWidth / 2;
+      const screenY = py + viewHeight / 2;
 
-      const screenX = sx + viewWidth / 2;
-      const screenY = sy + viewHeight / 2;
+      if (screenX < -cloud.radius * 2 || screenX > viewWidth + cloud.radius * 2) continue;
+      if (screenY < -cloud.radius * 2 || screenY > viewHeight + cloud.radius * 2) continue;
 
-      // Draw massive sweeping clouds
-      const rad = cloud.radius * 2.5; // Make them huge
-      if (screenX < -rad || screenX > viewWidth + rad) continue;
-      if (screenY < -rad || screenY > viewHeight + rad) continue;
-
-      ctx.save();
-      ctx.translate(screenX, screenY);
-      // Give them a slight rotation so they look like sweeping gas bands
-      ctx.rotate(cloud.x * 0.01); 
-      
-      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, rad);
+      const grad = ctx.createRadialGradient(
+        screenX, screenY, 0,
+        screenX, screenY, cloud.radius
+      );
       grad.addColorStop(0, cloud.color + Math.floor(cloud.opacity * 255).toString(16).padStart(2, '0'));
-      grad.addColorStop(0.4, cloud.color + Math.floor(cloud.opacity * 100).toString(16).padStart(2, '0'));
+      grad.addColorStop(0.5, cloud.color + Math.floor(cloud.opacity * 128).toString(16).padStart(2, '0'));
       grad.addColorStop(1, 'transparent');
 
       ctx.fillStyle = grad;
-      // Draw stretched ellipse for sweeping effect
-      ctx.beginPath();
-      ctx.ellipse(0, 0, rad, rad * 0.4, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+      ctx.fillRect(
+        screenX - cloud.radius,
+        screenY - cloud.radius,
+        cloud.radius * 2,
+        cloud.radius * 2
+      );
     }
-    ctx.restore();
   }
 }
