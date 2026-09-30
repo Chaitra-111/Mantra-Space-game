@@ -9,13 +9,56 @@ export class InstructionsScene {
     this.fadeIn = 0;
     this._clickHandler = null;
     this._keyHandler = null;
+    this.scrollY = 0;
+    this.targetScrollY = 0;
+    this.maxScroll = 0;
+    
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+    this.lastTouchY = 0;
+    this.didDrag = false;
+
+    this._wheelHandler = (e) => {
+      e.preventDefault();
+      this.targetScrollY += e.deltaY * 0.5;
+    };
+    window.addEventListener('wheel', this._wheelHandler, { passive: false });
+
+    this._touchStartHandler = (e) => {
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
+      this.lastTouchY = e.touches[0].clientY;
+      this.didDrag = false;
+    };
+    
+    this._touchMoveHandler = (e) => {
+      const touchY = e.touches[0].clientY;
+      const touchX = e.touches[0].clientX;
+      
+      if (Math.abs(this.touchStartX - touchX) > 10 || Math.abs(this.touchStartY - touchY) > 10) {
+        this.didDrag = true;
+      }
+      
+      const deltaY = this.lastTouchY - touchY;
+      this.targetScrollY += deltaY;
+      this.lastTouchY = touchY;
+    };
+
+    window.addEventListener('touchstart', this._touchStartHandler, { passive: true });
+    window.addEventListener('touchmove', this._touchMoveHandler, { passive: true });
   }
 
   init(engine) {
     this.engine = engine;
     this.fadeIn = 0;
+    this.scrollY = 0;
+    this.targetScrollY = 0;
 
     this._clickHandler = (e) => {
+      if (this.didDrag) {
+        this.didDrag = false;
+        return;
+      }
       this.onStart();
     };
     // Add a slight delay before accepting clicks so the user doesn't instantly click through
@@ -37,6 +80,8 @@ export class InstructionsScene {
 
   update(dt, time) {
     this.fadeIn = Math.min(1, this.fadeIn + dt * 1.5);
+    this.targetScrollY = Math.max(0, Math.min(this.maxScroll, this.targetScrollY));
+    this.scrollY += (this.targetScrollY - this.scrollY) * 0.15;
   }
 
   render(ctx, time) {
@@ -48,6 +93,7 @@ export class InstructionsScene {
     ctx.fillRect(0, 0, w, h);
 
     ctx.save();
+    ctx.translate(0, -this.scrollY);
     ctx.globalAlpha = this.fadeIn;
 
     // Title
@@ -114,11 +160,18 @@ export class InstructionsScene {
     ctx.textAlign = 'center';
     ctx.fillText('CLICK ANYWHERE OR PRESS ENTER TO START', w / 2, boxY + boxH + 60);
 
+    // Calculate max scroll so we don't scroll infinitely
+    const contentBottom = boxY + boxH + 100;
+    this.maxScroll = Math.max(0, contentBottom - h);
+
     ctx.restore();
   }
 
   cleanup() {
     window.removeEventListener('click', this._clickHandler);
     window.removeEventListener('keydown', this._keyHandler);
+    window.removeEventListener('wheel', this._wheelHandler);
+    window.removeEventListener('touchstart', this._touchStartHandler);
+    window.removeEventListener('touchmove', this._touchMoveHandler);
   }
 }

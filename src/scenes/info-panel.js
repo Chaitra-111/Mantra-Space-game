@@ -41,7 +41,7 @@ export class InfoPanelScene {
     window.addEventListener('keydown', this._keyHandler);
 
     this.canClose = false;
-    setTimeout(() => { this.canClose = true; }, 100);
+    setTimeout(() => { this.canClose = true; }, 500);
 
     // Click handler for close button
     this._clickHandler = (e) => {
